@@ -49,6 +49,23 @@ describe Impression do
     @article.impressionist_count(:filter=>:session_hash).should eq 7
   end
   
+  # Testing class methods
+  it "should return most popular articles with no date range specified" do
+    Article.most_popular_by_impression_count.size.should eq 1
+  end
+  
+  it "should return most popular articles with no date range specified with impressions_count" do
+    Article.most_popular_by_impression_count.first.impressions_count.should eq 1
+  end
+  
+  it "should return most popular articles with only start date specified" do
+    @article.most_popular_by_impression_count(:start_date=>"2011-01-01",:filter=>:all).size.should eq 8
+  end
+  
+  it "should return most popular articles with whole date range specified" do
+    @article.most_popular_by_impression_count(:start_date=>"2011-01-01",:end_date=>"2011-01-02").size.should eq 7
+  end
+  
   #OLD COUNT METHODS.  DEPRECATE SOON
   it "should return the impression count with no date range specified" do
     @article.impression_count.should eq 11

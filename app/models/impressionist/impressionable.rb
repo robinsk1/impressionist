@@ -3,6 +3,24 @@ module Impressionist
     def is_impressionable
       has_many :impressions, :as=>:impressionable, :dependent => :destroy
       include InstanceMethods
+      extend ClassMethods
+    end
+    
+    module ClassMethods
+      # Returns the most popular records by impression count for models that have been made impressionable.
+      # Useful for creating 'most popular' lists
+      # Accepts start_date and end_date as options hash for filtering
+      #
+      def most_popular_by_impression_count(options = {})
+        options.reverse_merge!(:start_date => nil, :end_date => Time.now)
+        obj = ActiveRecord::Base.send(:class_of_active_record_descendant, self).to_s
+        
+        res = obj.constantize.select("#{obj.tableize}.*, COUNT(impressions.id) AS impressions_count").group("#{obj.tableize}.id").joins(:impressions).order("impressions_count DESC").limit(options[:limit])
+        
+        # Filter by date range if start date specified
+        res = res.where("impressions.created_at >= ? and impressions.created_at <= ?",options[:start_date],options[:end_date]) unless options[:start_date].blank?
+        return res
+      end
     end
     
     module InstanceMethods
