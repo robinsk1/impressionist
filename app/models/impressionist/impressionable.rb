@@ -1,7 +1,7 @@
 module Impressionist
   module Impressionable
     def is_impressionable
-      has_many :impressions, :as=>:impressionable
+      has_many :impressions, :as=>:impressionable, :dependent => :destroy
       include InstanceMethods
     end
     
